@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028355, g: 0.22571374, b: 0.30692255, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 255212794}
   - component: {fileID: 255212795}
   m_Layer: 0
-  m_Name: Ext
+  m_Name: QuestPointTester
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -164,9 +164,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 255212793}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0ba0eb6de6f249759bc69eb52c0c4c4, type: 3}
+  m_Script: {fileID: 11500000, guid: e0225a47dd70a2643ba93413768ba858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _questPoint: {fileID: 1575058330}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,7 +357,7 @@ GameObject:
   - component: {fileID: 1002177612}
   - component: {fileID: 1002177611}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: QuestManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -375,8 +376,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _questLines:
-    QuestLines:
-    - {fileID: 11400000, guid: 924915870ed2a4946b44aa13a6161afa, type: 2}
+  - {fileID: 11400000, guid: 924915870ed2a4946b44aa13a6161afa, type: 2}
+  _saveType: 0
+  _returnType: 0
+  _saveFileName: quests.savegame
+  _questLineAssetPath: Assets/ScriptableObjects/QuestSystem/QuestLines
+  _questAssetPath: Assets/ScriptableObjects/QuestSystem/Quests
+  _questStepAssetPath: Assets/ScriptableObjects/QuestSystem/QuestSteps
 --- !u!4 &1002177612
 Transform:
   m_ObjectHideFlags: 0
@@ -391,4 +397,79 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1575058329
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1575058331}
+  - component: {fileID: 1575058330}
+  m_Layer: 0
+  m_Name: QuestPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1575058330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575058329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b366180e8d7adb4c90e62394743327d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _questStep: {fileID: 11400000, guid: e3dd722459ee852459cebb9fc7e3bc23, type: 2}
+  OnStepAlreadyValidated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 255212795}
+        m_TargetAssemblyTypeName: QuestPointTester, Assembly-CSharp
+        m_MethodName: OnQuestAlreadyCompleted
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnStepValidated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 255212795}
+        m_TargetAssemblyTypeName: QuestPointTester, Assembly-CSharp
+        m_MethodName: OnQuestStepCompleted
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!4 &1575058331
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575058329}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

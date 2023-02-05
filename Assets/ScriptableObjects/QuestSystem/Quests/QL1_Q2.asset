@@ -10,7 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14c5356932dff4300ad56c1f84163e6c, type: 3}
-  m_Name: Quest1
+  m_Name: QL1_Q2
   m_EditorClassIdentifier: 
-  _name: Quest 1
-  _description: Quest 1 description
+  _name: QL1_Q2
+  _description: Quest 2 of main quest
+  _steps:
+  - {fileID: 11400000, guid: 9b66f620fa5b884449be76d50ff14a97, type: 2}

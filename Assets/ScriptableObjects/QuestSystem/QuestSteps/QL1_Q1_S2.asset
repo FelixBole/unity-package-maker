@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cf83ade17e864e85ac3050b90ea7418, type: 3}
-  m_Name: MainQuests
+  m_Script: {fileID: 11500000, guid: 3005ba63110944e2ca91efdd1816d4f0, type: 3}
+  m_Name: QL1_Q1_S2
   m_EditorClassIdentifier: 
-  _name: MainStory
-  _quests:
-  - {fileID: 11400000, guid: ed0ca7203ab1c44b8be7d68066bda1d4, type: 2}
-  - {fileID: 11400000, guid: d2edf207f582944ccb4ff53a28ec3241, type: 2}
+  _name: QL1_Q1_S2
+  _completed: 1
