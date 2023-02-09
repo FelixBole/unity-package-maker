@@ -55,6 +55,26 @@ namespace Slax.QuestSystem
             }
         }
 
+        public int GetStepIndex(QuestStepSO step) => _steps.FindIndex(s => s.Name == step.Name);
+
+        /// <summary>
+        /// Verifies if all the previous steps from the given steps
+        /// have been completed
+        /// </summary>
+        public bool AllPreviousStepsCompleted(QuestStepSO step)
+        {
+            int idx = GetStepIndex(step);
+            if (idx == -1) return false;
+            if (idx == 0) return true;
+
+            for (int i = 0; i < idx; i++)
+            {
+                if (!_steps[i].Completed) return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Handles the step completion in the verification pipeline to determine
         /// which event should be fired by the Quest Manager. If the quest is completed

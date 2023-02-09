@@ -338,12 +338,15 @@ namespace Slax.QuestSystem
         public QuestSO Quest;
         /// <summary>The current step for which the event was sent</summary>
         public QuestStepSO Step;
+        /// <summary>If the step validated was the first step, meaning the quest just started</summary>
+        public bool IsFirstStep;
 
         public QuestEventInfo(QuestLineSO questLine, QuestSO quest, QuestStepSO step)
         {
             this.QuestLine = questLine;
             this.Quest = quest;
             this.Step = step;
+            this.IsFirstStep = quest.Steps.FindIndex(s => s.Name == step.Name) == 0;
         }
     }
 }
