@@ -107,11 +107,11 @@ namespace Slax.QuestSystem
 
             foreach (string doneStep in doneQuestSteps)
             {
-                QuestLineSO questLine = _questLines.Find(ql => ql.Quests.Find(q => q.Steps.Find(s => s.Name == doneStep)));
+                QuestLineSO questLine = _questLines.Find(ql => ql.Quests.Find(q => q.Steps.Find(s => s.name == doneStep)));
                 if (!questLine) continue;
-                int questIdx = questLine.Quests.FindIndex(q => q.Steps.Find(s => s.Name == doneStep));
+                int questIdx = questLine.Quests.FindIndex(q => q.Steps.Find(s => s.name == doneStep));
                 if (questIdx == -1) continue;
-                int idx = questLine.Quests[questIdx].Steps.FindIndex(s => s.Name == doneStep);
+                int idx = questLine.Quests[questIdx].Steps.FindIndex(s => s.name == doneStep);
                 if (idx == -1) continue;
                 questLine.Quests[questIdx].Steps[idx].InitAsCompleted();
             }
@@ -170,6 +170,7 @@ namespace Slax.QuestSystem
         /// </summary>
         private void HandleStepCompletedEvent(QuestSO quest, QuestStepSO step)
         {
+            Debug.Log($"Preparing to fire step complete {step.name}");
             quest.OnProgress -= HandleStepCompletedEvent;
             QuestEventInfo eventInfo = PrepareQuestEventInfo(step);
             OnStepComplete.Invoke(eventInfo);
@@ -204,15 +205,15 @@ namespace Slax.QuestSystem
 
         #region Helpers
 
-        private QuestLineSO QuestLineFromQuest(QuestSO quest) => _questLines.Find(ql => ql.Quests.Find(q => q.Name == quest.Name));
+        private QuestLineSO QuestLineFromQuest(QuestSO quest) => _questLines.Find(ql => ql.Quests.Find(q => q.name == quest.name));
 
-        private QuestLineSO QuestLineFromQuestStep(QuestStepSO step) => _questLines.Find(ql => ql.Quests.Find(q => q.Steps.Find(s => s.Name == step.Name)));
+        private QuestLineSO QuestLineFromQuestStep(QuestStepSO step) => _questLines.Find(ql => ql.Quests.Find(q => q.Steps.Find(s => s.name == step.name)));
 
         private QuestSO QuestFromStep(QuestStepSO questStep)
         {
             QuestLineSO questLine = QuestLineFromQuestStep(questStep);
             if (!questLine) throw new Exception("No QuestLine found for this Quest Step");
-            QuestSO quest = questLine.Quests.Find(q => q.Steps.Find(s => s.Name == questStep.Name));
+            QuestSO quest = questLine.Quests.Find(q => q.Steps.Find(s => s.name == questStep.name));
             return quest;
         }
 
@@ -243,7 +244,7 @@ namespace Slax.QuestSystem
                     {
                         if (step.Completed)
                         {
-                            newSaveData.DoneQuestSteps.Add(step.Name);
+                            newSaveData.DoneQuestSteps.Add(step.name);
                         }
                     }
                 }
@@ -346,7 +347,7 @@ namespace Slax.QuestSystem
             this.QuestLine = questLine;
             this.Quest = quest;
             this.Step = step;
-            this.IsFirstStep = quest.Steps.FindIndex(s => s.Name == step.Name) == 0;
+            this.IsFirstStep = quest.Steps.FindIndex(s => s.name == step.name) == 0;
         }
     }
 }

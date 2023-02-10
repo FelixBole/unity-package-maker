@@ -31,12 +31,12 @@ public class QuestPointTester : MonoBehaviour
 
     public void OnQuestAlreadyCompleted(QuestStepSO step)
     {
-        Debug.Log($"Quest Step {step.Name} has already been completed");
+        Debug.Log($"Quest Step {step.name} has already been completed");
     }
 
     public void OnQuestStepCompleted(QuestStepSO step)
     {
-        Debug.Log($"Direct event from QuestPoint {step.Name}");
+        Debug.Log($"Direct event from QuestPoint {step.name}");
     }
 
     public void OnQuestManagerEvent(QuestEventInfo eventInfo)
@@ -45,6 +45,6 @@ public class QuestPointTester : MonoBehaviour
         string questCompleted = eventInfo.Quest.Completed.ToString();
         string questLineCompleted = eventInfo.QuestLine.Completed.ToString();
 
-        Debug.Log($"Questline {eventInfo.QuestLine.Name} completed: {questLineCompleted} \n Quest {eventInfo.Quest.Name} completed: {questCompleted} \n Step {eventInfo.Step.Name} completed: {stepCompleted}");
+        Debug.Log($"Questline {eventInfo.QuestLine.name} completed: {questLineCompleted} \n Quest {eventInfo.Quest.name} completed: {questCompleted} \n Step {eventInfo.Step.name} completed: {stepCompleted}");
     }
 }

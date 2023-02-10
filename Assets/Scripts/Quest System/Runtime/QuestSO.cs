@@ -25,7 +25,7 @@ namespace Slax.QuestSystem
         public string Name => _name;
         public string Description => _description;
         public List<QuestStepSO> Steps => _steps;
-        public bool Completed => !_steps.Find(step => step.Completed == true);
+        public bool Completed => !_steps.Find(step => step.Completed == false);
         public bool Started => _steps.Find(step => step.Completed == true);
 
         public void Initialize()
@@ -55,7 +55,7 @@ namespace Slax.QuestSystem
             }
         }
 
-        public int GetStepIndex(QuestStepSO step) => _steps.FindIndex(s => s.Name == step.Name);
+        public int GetStepIndex(QuestStepSO step) => _steps.FindIndex(s => s.name == step.name);
 
         /// <summary>
         /// Verifies if all the previous steps from the given steps

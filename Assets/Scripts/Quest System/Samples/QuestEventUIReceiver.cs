@@ -27,21 +27,24 @@ public class QuestEventUIReceiver : MonoBehaviour
 
     private void HandleQuestLineComplete(QuestEventInfo eventInfo)
     {
-        _text.text = $"Quest Line {eventInfo.QuestLine.Name} complete !";
+        _text.text = $"Quest Line {eventInfo.QuestLine.name} complete !";
     }
 
     private void HandleQuestComplete(QuestEventInfo eventInfo)
     {
-        _text.text = $"Quest {eventInfo.Quest.Name} complete !";
+        _text.text = $"Quest {eventInfo.Quest.name} complete !";
     }
 
     private void HandleStepComplete(QuestEventInfo eventInfo)
     {
         string text;
-        if (eventInfo.IsFirstStep) {
-            text = $"Quest {eventInfo.Quest.Name} started !";
-        } else {
-            text = $"Step {eventInfo.Step.Name} of {eventInfo.Quest.Name} complete !";
+        if (eventInfo.IsFirstStep)
+        {
+            text = $"Quest {eventInfo.Quest.name} started !";
+        }
+        else
+        {
+            text = $"Step {eventInfo.Step.name} of {eventInfo.Quest.name} complete !";
         }
         _text.text = text;
     }

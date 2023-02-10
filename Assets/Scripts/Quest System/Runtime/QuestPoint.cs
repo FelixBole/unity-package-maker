@@ -15,6 +15,7 @@ namespace Slax.QuestSystem
         [SerializeField] private QuestStepSO _questStep = null;
         public bool Completed => _questStep.Completed;
 
+        [Header("Events")]
         /// <summary>
         /// Event fired when a step has already been validated and trying
         /// to complete it again.
