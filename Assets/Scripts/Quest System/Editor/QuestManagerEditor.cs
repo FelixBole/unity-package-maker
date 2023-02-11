@@ -6,10 +6,8 @@ namespace Slax.QuestSystem
     [CustomEditor(typeof(QuestManager))]
     public class QuestManagerEditor : Editor
     {
-        bool showQuestDetails = true;
         bool showSaveBox = true;
         bool showManualOperations = false;
-        bool showQuestOperations = false;
 
         public override void OnInspectorGUI()
         {
@@ -20,7 +18,7 @@ namespace Slax.QuestSystem
             SerializedProperty questAssetPath = serializedObject.FindProperty("_questAssetPath");
             SerializedProperty questStepAssetPath = serializedObject.FindProperty("_questStepAssetPath");
 
-            GUILayout.Box("The Quest Manager handles all quest related operations. \n Quest completion, quest events, saving and loading etc. It is easy to customize as well. \n\n When creating Quests it is recommended to follow the following pattern in order to keep things easy to maintain : QuestLineX_QuestX_StepX (shorter : QLX_QX_SX) where X is a number.", EditorStyles.helpBox);
+            GUILayout.Box("The Quest Manager handles all quest related operations. \n Quest completion, quest events, saving and loading etc. It is easy to customize as well.", EditorStyles.helpBox);
 
             GUILayout.Space(30);
 
@@ -28,34 +26,8 @@ namespace Slax.QuestSystem
             GUILayout.Label("Quests Configuration", EditorStyles.boldLabel);
             DrawDefaultProp("_questLines");
             GUILayout.Space(10);
-            showQuestDetails = EditorGUILayout.Foldout(showQuestDetails, "Quest Asset Paths");
-            if (showQuestDetails)
-            {
-                EditorGUI.indentLevel = 2;
-                DrawDefaultProp("_questLineAssetPath");
-                DrawDefaultProp("_questAssetPath");
-                DrawDefaultProp("_questStepAssetPath");
-                EditorGUI.indentLevel = 1;
-            }
-            GUILayout.Space(10);
-            showQuestOperations = EditorGUILayout.Foldout(showQuestOperations, "Quest Asset creation");
-            if (showQuestOperations)
-            {
-                if (GUILayout.Button(new GUIContent("Create Quest Line", "Creates a new Quest Line at defined Quest Line Asset Path"), GUILayout.Height(20)))
-                {
-                    QuestAssetCreator.CreateQuestLine(questLineAssetPath.stringValue);
-                }
-                if (GUILayout.Button(new GUIContent("Create Quest", "Creates a new Quest at defined Quest Asset Path"), GUILayout.Height(20)))
-                {
-                    QuestAssetCreator.CreateQuest(questAssetPath.stringValue);
-                }
-                if (GUILayout.Button(new GUIContent("Create Quest Step", "Creates a new Quest Step at Quest Step asset path"), GUILayout.Height(20)))
-                {
-                    QuestAssetCreator.CreateQuestStep(questStepAssetPath.stringValue);
-                }
-            }
-            EditorGUI.indentLevel = 0;
 
+            EditorGUI.indentLevel = 0;
             GUILayout.Space(30);
 
             GUILayout.Label("Save Configuration", EditorStyles.boldLabel);

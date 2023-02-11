@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3005ba63110944e2ca91efdd1816d4f0, type: 3}
   m_Name: QL1_Q1_S2
   m_EditorClassIdentifier: 
-  _name: QL1_Q1_S2
+  _name: Getting used to controls
   _completed: 1

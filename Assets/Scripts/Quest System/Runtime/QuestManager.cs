@@ -31,14 +31,6 @@ namespace Slax.QuestSystem
 
         public static QuestManager Instance { get; private set; }
 
-#if UNITY_EDITOR
-        #region Editor Configuration Only
-        [SerializeField] private string _questLineAssetPath;
-        [SerializeField] private string _questAssetPath;
-        [SerializeField] private string _questStepAssetPath;
-        #endregion
-#endif
-
         #region MonoBehaviour
 
         private void Awake()

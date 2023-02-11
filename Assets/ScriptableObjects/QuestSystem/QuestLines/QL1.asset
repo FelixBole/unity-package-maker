@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cf83ade17e864e85ac3050b90ea7418, type: 3}
   m_Name: QL1
   m_EditorClassIdentifier: 
-  _name: QL1
+  _name: Main Story
   _quests:
   - {fileID: 11400000, guid: ed0ca7203ab1c44b8be7d68066bda1d4, type: 2}
   - {fileID: 11400000, guid: d2edf207f582944ccb4ff53a28ec3241, type: 2}
