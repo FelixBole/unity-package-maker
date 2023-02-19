@@ -15,5 +15,5 @@ MonoBehaviour:
   QuestLineAssetPath: Assets/ScriptableObjects/QuestSystem/QuestLines
   QuestAssetPath: Assets/ScriptableObjects/QuestSystem/Quests
   QuestStepAssetPath: Assets/ScriptableObjects/QuestSystem/QuestSteps
-  LastSelectedTab: 0
+  LastSelectedTab: 2
   LastCreatedAsset: {fileID: 11400000, guid: 597a00a2f02564037bbe7bab9cb40c13, type: 2}

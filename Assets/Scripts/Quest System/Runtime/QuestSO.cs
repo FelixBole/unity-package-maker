@@ -14,19 +14,22 @@ namespace Slax.QuestSystem
     [System.Serializable]
     public class QuestSO : ScriptableObject
     {
-        [SerializeField] private string _name;
+        [SerializeField] private string _name = "QL0_Q0";
         [TextArea]
         [SerializeField] private string _description;
         [SerializeField] private List<QuestStepSO> _steps;
+        [SerializeField] private Texture2D _sprite;
 
         public UnityAction<QuestSO, QuestStepSO> OnCompleted = delegate { };
         public UnityAction<QuestSO, QuestStepSO> OnProgress = delegate { };
 
-        public string Name => _name;
+        public string DisplayName => _name;
         public string Description => _description;
         public List<QuestStepSO> Steps => _steps;
-        public bool Completed => !_steps.Find(step => step.Completed == false);
-        public bool Started => _steps.Find(step => step.Completed == true);
+        public bool Completed => !_steps.Find(step => !step.Completed);
+        public bool Started => _steps.Find(step => step.Started || step.Completed);
+        public Texture2D Sprite => _sprite;
+        
 
         public void Initialize()
         {
@@ -38,20 +41,6 @@ namespace Slax.QuestSystem
                 {
                     step.OnCompleted += HandleStepCompletedEvent;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Marks a step of the quest as completed using its name
-        /// </summary>
-        public void CompleteStep(string stepName)
-        {
-            QuestStepSO step = _steps.Find((QuestStepSO s) => s.name == stepName);
-            if (step)
-            {
-                step.SetCompleted(true);
-
-                bool hasIncompleteStep = _steps.Find((QuestStepSO s) => s.Completed == false);
             }
         }
 

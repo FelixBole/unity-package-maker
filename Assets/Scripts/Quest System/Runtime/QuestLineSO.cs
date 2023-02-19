@@ -11,15 +11,17 @@ namespace Slax.QuestSystem
     public class QuestLineSO : ScriptableObject
     {
         [Tooltip("The name of the Quest Line")]
-        [SerializeField] private string _name;
+        [SerializeField] private string _name = "QL0";
         [Tooltip("List of quests")]
         [SerializeField] private List<QuestSO> _quests = new List<QuestSO>();
+        [SerializeField] private Texture2D _sprite;
         public UnityAction<QuestLineSO, QuestSO, QuestStepSO> OnCompleted = delegate { };
         public UnityAction<QuestLineSO, QuestSO, QuestStepSO> OnProgress = delegate { };
         private bool _completed = false;
         public string Name => _name;
         public List<QuestSO> Quests => _quests;
         public bool Completed => _completed;
+        public Texture2D Sprite => _sprite;
 
         /// <summary>
         /// Should take in some QuestLine data from the save system or other and setup the completion state
@@ -41,6 +43,16 @@ namespace Slax.QuestSystem
                     quest.Initialize();
                 }
             }
+        }
+
+        public int GetTotalSteps()
+        {
+            int total = 0;
+            foreach (QuestSO quest in _quests)
+            {
+                total += quest.Steps.Count;
+            }
+            return total;
         }
 
         /// <summary>Checks if all quests in the questline are completed</summary>

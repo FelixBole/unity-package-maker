@@ -9,8 +9,25 @@ namespace Slax.QuestSystem
     public class QuestSaveData
     {
         /// A list of references of quest steps with whether it has been completed or not
-        /// 
-        /// WARNING: QuestSteps with the same name/ID will cause error in the save data file
         public List<string> DoneQuestSteps = new List<string>();
+    }
+
+    [System.Serializable]
+    public class SaveData
+    {
+        public List<SavedStep> Steps = new List<SavedStep>();
+    }
+
+    [System.Serializable]
+    public struct SavedStep
+    {
+        public string Step;
+        public StepState State;
+
+        public SavedStep(string step, StepState state)
+        {
+            this.Step = step;
+            this.State = state;
+        }
     }
 }

@@ -38,7 +38,7 @@ public class QuestEventUIReceiver : MonoBehaviour
     private void HandleStepComplete(QuestEventInfo eventInfo)
     {
         string text;
-        if (eventInfo.IsFirstStep)
+        if (eventInfo.IsQuestStart)
         {
             text = $"Quest {eventInfo.Quest.name} started !";
         }

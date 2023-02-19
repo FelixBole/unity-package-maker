@@ -15,23 +15,66 @@ namespace Slax.QuestSystem
     public class QuestStepSO : ScriptableObject
     {
         [Tooltip("In order to organise steps correctly, it is recommended to use the format QuestLine_Quest_QuestStep in the name: QLX_QX_SX, where X is a number")]
-        [SerializeField] private string _name;
-        [SerializeField] private bool _completed = false;
+        [SerializeField] private string _name = "QL0_Q0_S0";
+        [SerializeField] private StepState _state = StepState.NotStarted;
+        [SerializeField] private List<QuestStepSO> _requirements = new List<QuestStepSO>();
 
+        /// <summary>Event fired when the step is started for the QuestManager to handle</summary>
+        public UnityAction<QuestStepSO> OnStarted = delegate { };
+
+        /// <summary>Event fired when the step is completed for the QuestSO to handle</summary>
         public UnityAction<QuestStepSO> OnCompleted = delegate { };
 
-        public string Name => _name;
-        public bool Completed => _completed;
-        public void SetCompleted(bool completed)
+        /// <summary>Event fired when there are requirements missing and there is an attempt to start a quest</summary>
+        public UnityAction<List<QuestStepSO>> OnMissingRequirements = delegate { };
+
+        public string DisplayName => _name;
+        public StepState State => _state;
+        public bool Started => _state == StepState.Started;
+        public bool Completed => _state == StepState.Completed;
+
+        /// <summary>Check to see if the list of requirement to start the step has been met</summary>
+        public bool IsRequirementsMet => !_requirements.Find(s => s.Completed);
+
+        /// <summary>List of steps required prior to activate this step</summary>
+        public List<QuestStepSO> Requirements => _requirements;
+
+        public void StartStep() => StepUpdate(StepState.Started);
+        public void CompleteStep() => StepUpdate(StepState.Completed);
+
+        public void StepUpdate(StepState state)
         {
-            _completed = completed;
-            OnCompleted.Invoke(this);
+            if (state == StepState.Started)
+            {
+                if (!IsRequirementsMet)
+                {
+                    List<QuestStepSO> missingRequirements = _requirements.FindAll(s => !s.Completed);
+                    OnMissingRequirements.Invoke(missingRequirements);
+                    return;
+                }
+
+                _state = StepState.Started;
+                OnStarted.Invoke(this);
+            }
+            else if (state == StepState.Completed)
+            {
+                _state = state;
+                OnCompleted.Invoke(this);
+            }
+            else
+            {
+                _state = state;
+                // OnReset event needed ?
+            }
         }
 
         /// <summary>
-        /// Initializes the completion state as completed without firing an event.
+        /// Initializes the completion state without firing an event.
         /// Used for loading from save data to setup quests
         /// </summary>
-        public void InitAsCompleted() => _completed = true;
+        public void InitAs(StepState state)
+        {
+            _state = state;
+        }
     }
 }

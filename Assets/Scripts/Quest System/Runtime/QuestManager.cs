@@ -25,6 +25,7 @@ namespace Slax.QuestSystem
         public SaveType SaveType => _saveType;
         public ReturnType ReturnType => _returnType;
 
+        public UnityAction<QuestEventInfo> OnStepStart = delegate { };
         public UnityAction<QuestEventInfo> OnStepComplete = delegate { };
         public UnityAction<QuestEventInfo> OnQuestComplete = delegate { };
         public UnityAction<QuestEventInfo> OnQuestLineComplete = delegate { };
@@ -84,28 +85,28 @@ namespace Slax.QuestSystem
         /// </summary>
         public void Initialize(string jsonData)
         {
-            QuestSaveData savedQuestSteps = JsonUtility.FromJson<QuestSaveData>(jsonData);
-            Debug.Log(savedQuestSteps);
-            Initialize(savedQuestSteps.DoneQuestSteps);
+            SaveData save = JsonUtility.FromJson<SaveData>(jsonData);
+            Debug.Log(save);
+            Initialize(save.Steps);
         }
 
         /// <summary>
         /// Initializes the Quest Manager with save data when using List<string> saved data
         /// </summary>
-        public void Initialize(List<string> doneQuestSteps)
+        public void Initialize(List<SavedStep> savedSteps)
         {
             // Start by resetting all data
             ResetAllQuests();
 
-            foreach (string doneStep in doneQuestSteps)
+            foreach (SavedStep savedStep in savedSteps)
             {
-                QuestLineSO questLine = _questLines.Find(ql => ql.Quests.Find(q => q.Steps.Find(s => s.name == doneStep)));
+                QuestLineSO questLine = _questLines.Find(ql => ql.Quests.Find(q => q.Steps.Find(s => s.name == savedStep.Step)));
                 if (!questLine) continue;
-                int questIdx = questLine.Quests.FindIndex(q => q.Steps.Find(s => s.name == doneStep));
+                int questIdx = questLine.Quests.FindIndex(q => q.Steps.Find(s => s.name == savedStep.Step));
                 if (questIdx == -1) continue;
-                int idx = questLine.Quests[questIdx].Steps.FindIndex(s => s.name == doneStep);
+                int idx = questLine.Quests[questIdx].Steps.FindIndex(s => s.name == savedStep.Step);
                 if (idx == -1) continue;
-                questLine.Quests[questIdx].Steps[idx].InitAsCompleted();
+                questLine.Quests[questIdx].Steps[idx].InitAs(savedStep.State);
             }
 
             SubscribeToQuestEvents();
@@ -123,7 +124,16 @@ namespace Slax.QuestSystem
 
                 foreach (QuestSO quest in questLine.Quests)
                 {
-                    quest.OnProgress += HandleStepCompletedEvent;
+                    if (!quest.Completed)
+                    {
+                        quest.OnProgress += HandleStepCompletedEvent;
+                    }
+
+                    foreach (QuestStepSO step in quest.Steps)
+                    {
+                        if (step.State != StepState.NotStarted) continue;
+                        step.OnStarted += HandleStepStartEvent;
+                    }
                 }
             }
         }
@@ -139,7 +149,7 @@ namespace Slax.QuestSystem
                 {
                     foreach (QuestStepSO step in quest.Steps)
                     {
-                        step.SetCompleted(false);
+                        step.InitAs(StepState.NotStarted);
                     }
                 }
             }
@@ -150,19 +160,24 @@ namespace Slax.QuestSystem
         #region Quest Events
 
         /// <summary>
-        /// Completes the step and launches the checks pipeline leading
-        /// to the QuestManager firing an event on one of the 3 completion
-        /// events (step, quest, questline)
+        /// Handles the event fired from a Step when the
+        /// step starts. The QuestEventInfo will hold the
+        /// appropriate info to know if it is a Quest start
+        /// or a QuestLine start for any listener to process
         /// </summary>
-        public void CompleteStep(QuestStepSO step) => step.SetCompleted(true);
+        private void HandleStepStartEvent(QuestStepSO step)
+        {
+            step.OnStarted -= HandleStepStartEvent;
+            QuestEventInfo eventInfo = PrepareQuestEventInfo(step);
+            OnStepStart.Invoke(eventInfo);
+        }
 
         /// <summary>
-        /// Handles the event fired from a Quest whenever a step is completed
-        /// but the quest is not completed yet
+        /// Handles the event fired from a Quest whenever a step
+        /// is completed but the quest is not completed yet
         /// </summary>
         private void HandleStepCompletedEvent(QuestSO quest, QuestStepSO step)
         {
-            Debug.Log($"Preparing to fire step complete {step.name}");
             quest.OnProgress -= HandleStepCompletedEvent;
             QuestEventInfo eventInfo = PrepareQuestEventInfo(step);
             OnStepComplete.Invoke(eventInfo);
@@ -221,37 +236,33 @@ namespace Slax.QuestSystem
 
         /// <summary>
         /// Returns the Done Quest Steps List as JSON parsed data or
-        /// directly as List<string> depending on the set ReturnType
+        /// directly as List<SavedStep> depending on the set ReturnType
         /// </summary>
-        [ContextMenu("Get Save Data")]
+        [ContextMenu("Save")]
         public dynamic CreateSaveData()
         {
-            QuestSaveData newSaveData = new QuestSaveData();
-
+            SaveData save = new SaveData();
             foreach (QuestLineSO questLine in _questLines)
             {
                 foreach (QuestSO quest in questLine.Quests)
                 {
                     foreach (QuestStepSO step in quest.Steps)
                     {
-                        if (step.Completed)
-                        {
-                            newSaveData.DoneQuestSteps.Add(step.name);
-                        }
+                        save.Steps.Add(new SavedStep(step.name, step.State));
                     }
                 }
             }
 
-            string saveDataJSON = JsonUtility.ToJson(newSaveData);
+            string saveDataJSON = JsonUtility.ToJson(save);
 
             if (_saveType == SaveType.Custom)
             {
-                if (_returnType == ReturnType.ListString) return newSaveData.DoneQuestSteps;
+                if (_returnType == ReturnType.StepList) return save.Steps;
                 return saveDataJSON;
             }
 
             FileManager.WriteToFile(_saveFileName, saveDataJSON);
-            return _returnType == ReturnType.JSON ? saveDataJSON : newSaveData.DoneQuestSteps;
+            return _returnType == ReturnType.JSON ? saveDataJSON : save.Steps;
         }
 
 #if UNITY_EDITOR
@@ -315,7 +326,17 @@ namespace Slax.QuestSystem
         /// Setting this return type value will return data as a List<string> with the names/ids of the completed quests
         /// allowing for custom processing of the data before save if needed
         /// </summary>
-        ListString,
+        StepList,
+    }
+
+    /// <summary>
+    /// The completion state of a step. This information is used when saving the steps to disk
+    /// </summary>
+    public enum StepState
+    {
+        NotStarted = 0,
+        Started = 1,
+        Completed = 2,
     }
 
     /// <summary>
@@ -332,14 +353,17 @@ namespace Slax.QuestSystem
         /// <summary>The current step for which the event was sent</summary>
         public QuestStepSO Step;
         /// <summary>If the step validated was the first step, meaning the quest just started</summary>
-        public bool IsFirstStep;
+        public bool IsQuestStart;
+        /// <summary>If the step validated was the first step of the quest & of the first quest of the questline</summary>
+        public bool IsQuestLineStart;
 
         public QuestEventInfo(QuestLineSO questLine, QuestSO quest, QuestStepSO step)
         {
             this.QuestLine = questLine;
             this.Quest = quest;
             this.Step = step;
-            this.IsFirstStep = quest.Steps.FindIndex(s => s.name == step.name) == 0;
+            this.IsQuestStart = quest.Steps.FindIndex(s => s.name == step.name) == 0;
+            this.IsQuestLineStart = questLine.Quests.FindIndex(q => q.name == quest.name) == 0 && this.IsQuestStart;
         }
     }
 }
