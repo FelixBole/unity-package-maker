@@ -18,7 +18,7 @@ namespace Slax.QuestSystem
         public UnityAction<QuestLineSO, QuestSO, QuestStepSO> OnCompleted = delegate { };
         public UnityAction<QuestLineSO, QuestSO, QuestStepSO> OnProgress = delegate { };
         private bool _completed = false;
-        public string Name => _name;
+        public string DisplayName => _name;
         public List<QuestSO> Quests => _quests;
         public bool Completed => _completed;
         public Texture2D Sprite => _sprite;

@@ -225,7 +225,7 @@ namespace Slax.QuestSystem
             GUILayout.Label(questLine.Sprite ? questLine.Sprite : new Texture2D(previewSize, previewSize), GUILayout.Width(previewSize), GUILayout.Height(previewSize));
 
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField($"{questLine.Name}", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"{questLine.DisplayName}", EditorStyles.boldLabel);
             GUILayout.Label($"Asset: {questLine.name}");
             if (GUILayout.Button(_searchIcon, GetSquareButtonStyle(22)))
             {

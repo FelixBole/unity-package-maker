@@ -8,8 +8,9 @@ namespace Slax.QuestSystem
     /// </summary>
     public class QuestStepEnabler : MonoBehaviour
     {
-        [SerializeField] private QuestSO _quest;
         [SerializeField] private QuestStepSO _questStep;
+        [SerializeField] private bool _skipStartCheck;
+        private QuestSO _quest;
         private bool _isEnabled;
         public bool IsEnabled => _isEnabled;
 
@@ -17,10 +18,20 @@ namespace Slax.QuestSystem
 
         private void Awake()
         {
+            _quest = QuestManager.Instance.QuestFromStep(_questStep);
+            if (!_quest) throw new System.Exception("Could not find quest from provided quest step. Please make sure the quest step is setup in the QuestSO");
+
             int stepIdx = _quest.GetStepIndex(_questStep);
             if (stepIdx == -1) throw new System.Exception("Cannot use a step that isn't in a quest.");
 
-            _isEnabled = _quest.AllPreviousStepsCompleted(_questStep);
+            if (_skipStartCheck)
+            {
+                _isEnabled = _quest.AllPreviousStepsCompleted(_questStep) && _questStep.IsRequirementsMet;
+            }
+            else
+            {
+                _isEnabled = _quest.AllPreviousStepsCompleted(_questStep) && _questStep.IsRequirementsMet && _questStep.Started;
+            }
             OnEnableChange.Invoke(_isEnabled);
         }
 
@@ -45,7 +56,7 @@ namespace Slax.QuestSystem
         private void VerifyActivation(QuestEventInfo eventInfo)
         {
             if (eventInfo.Quest.name != _quest.name) return;
-            _isEnabled = _quest.AllPreviousStepsCompleted(_questStep);
+            _isEnabled = _quest.AllPreviousStepsCompleted(_questStep) && _questStep.IsRequirementsMet;
             OnEnableChange.Invoke(_isEnabled);
         }
     }

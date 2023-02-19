@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: QL2_Q1_S1
   m_EditorClassIdentifier: 
   _name: Quest Start
-  _completed: 0
+  _state: 0
+  _requirements:
+  - {fileID: 11400000, guid: 0a6b88698c61f464e8b61b36a83d81e9, type: 2}

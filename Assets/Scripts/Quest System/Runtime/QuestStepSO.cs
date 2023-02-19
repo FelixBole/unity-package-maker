@@ -14,7 +14,6 @@ namespace Slax.QuestSystem
     [CreateAssetMenu(menuName = "Slax/QuestSystem/QuestStep", fileName = "QL0_Q0_S0")]
     public class QuestStepSO : ScriptableObject
     {
-        [Tooltip("In order to organise steps correctly, it is recommended to use the format QuestLine_Quest_QuestStep in the name: QLX_QX_SX, where X is a number")]
         [SerializeField] private string _name = "QL0_Q0_S0";
         [SerializeField] private StepState _state = StepState.NotStarted;
         [SerializeField] private List<QuestStepSO> _requirements = new List<QuestStepSO>();
@@ -34,15 +33,15 @@ namespace Slax.QuestSystem
         public bool Completed => _state == StepState.Completed;
 
         /// <summary>Check to see if the list of requirement to start the step has been met</summary>
-        public bool IsRequirementsMet => !_requirements.Find(s => s.Completed);
+        public bool IsRequirementsMet => !_requirements.Find(s => !s.Completed);
 
         /// <summary>List of steps required prior to activate this step</summary>
         public List<QuestStepSO> Requirements => _requirements;
 
-        public void StartStep() => StepUpdate(StepState.Started);
-        public void CompleteStep() => StepUpdate(StepState.Completed);
+        public bool StartStep() => StepUpdate(StepState.Started);
+        public bool CompleteStep() => StepUpdate(StepState.Completed);
 
-        public void StepUpdate(StepState state)
+        public bool StepUpdate(StepState state)
         {
             if (state == StepState.Started)
             {
@@ -50,7 +49,7 @@ namespace Slax.QuestSystem
                 {
                     List<QuestStepSO> missingRequirements = _requirements.FindAll(s => !s.Completed);
                     OnMissingRequirements.Invoke(missingRequirements);
-                    return;
+                    return false;
                 }
 
                 _state = StepState.Started;
@@ -66,6 +65,8 @@ namespace Slax.QuestSystem
                 _state = state;
                 // OnReset event needed ?
             }
+
+            return true;
         }
 
         /// <summary>

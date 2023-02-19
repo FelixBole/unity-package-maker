@@ -29,6 +29,7 @@ namespace Slax.QuestSystem
         public UnityAction<QuestEventInfo> OnStepComplete = delegate { };
         public UnityAction<QuestEventInfo> OnQuestComplete = delegate { };
         public UnityAction<QuestEventInfo> OnQuestLineComplete = delegate { };
+        public UnityAction<List<QuestEventInfo>> OnMissingRequirements = delegate { };
 
         public static QuestManager Instance { get; private set; }
 
@@ -133,6 +134,7 @@ namespace Slax.QuestSystem
                     {
                         if (step.State != StepState.NotStarted) continue;
                         step.OnStarted += HandleStepStartEvent;
+                        step.OnMissingRequirements += HandleMissingRequirementsEvent;
                     }
                 }
             }
@@ -158,6 +160,22 @@ namespace Slax.QuestSystem
         #endregion
 
         #region Quest Events
+
+        ///<summary>
+        ///Handles the event fired from a Step when the step
+        /// attemps to start but there are some missing step
+        /// requirements.
+        ///</summary>
+        private void HandleMissingRequirementsEvent(List<QuestStepSO> requirements)
+        {
+            List<QuestEventInfo> eventInfoRequirements = new List<QuestEventInfo>();
+            foreach (QuestStepSO requirement in requirements)
+            {
+                requirement.OnMissingRequirements -= HandleMissingRequirementsEvent;
+                eventInfoRequirements.Add(PrepareQuestEventInfo(requirement));
+            }
+            OnMissingRequirements.Invoke(eventInfoRequirements);
+        }
 
         /// <summary>
         /// Handles the event fired from a Step when the
@@ -212,17 +230,17 @@ namespace Slax.QuestSystem
 
         #region Helpers
 
-        private QuestLineSO QuestLineFromQuest(QuestSO quest) => _questLines.Find(ql => ql.Quests.Find(q => q.name == quest.name));
-
-        private QuestLineSO QuestLineFromQuestStep(QuestStepSO step) => _questLines.Find(ql => ql.Quests.Find(q => q.Steps.Find(s => s.name == step.name)));
-
-        private QuestSO QuestFromStep(QuestStepSO questStep)
+        public QuestSO QuestFromStep(QuestStepSO questStep)
         {
             QuestLineSO questLine = QuestLineFromQuestStep(questStep);
             if (!questLine) throw new Exception("No QuestLine found for this Quest Step");
             QuestSO quest = questLine.Quests.Find(q => q.Steps.Find(s => s.name == questStep.name));
             return quest;
         }
+
+        private QuestLineSO QuestLineFromQuest(QuestSO quest) => _questLines.Find(ql => ql.Quests.Find(q => q.name == quest.name));
+
+        private QuestLineSO QuestLineFromQuestStep(QuestStepSO step) => _questLines.Find(ql => ql.Quests.Find(q => q.Steps.Find(s => s.name == step.name)));
 
         /// <summary>Prepares the data to be sent by Quest Manager events</summary>
         private QuestEventInfo PrepareQuestEventInfo(QuestStepSO step)

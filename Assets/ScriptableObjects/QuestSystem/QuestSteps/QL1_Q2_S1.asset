@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: QL1_Q2_S1
   m_EditorClassIdentifier: 
   _name: Locate the tree
-  _completed: 1
+  _state: 0
+  _requirements:
+  - {fileID: 11400000, guid: e8d286da3eb828744be6db91c62ca0ea, type: 2}

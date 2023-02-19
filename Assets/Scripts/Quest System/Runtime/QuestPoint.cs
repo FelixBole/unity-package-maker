@@ -21,7 +21,7 @@ namespace Slax.QuestSystem
         /// Event fired when a step is started. It is worth noting that
         /// the Quest Manager also fires an event with the step, the associated
         /// quest and the questline (QuestEventInfo), but this event allows for
-        /// some additionnal easy direct customization before the event fired
+        /// some additionnal easy direct customization after the event fired
         /// by the Quest Manager Singleton Instance
         /// </summary>
         public UnityEvent<QuestStepSO> OnStepStarted;
@@ -43,16 +43,16 @@ namespace Slax.QuestSystem
         /// Event fired when a step is validated. It is worth noting that
         /// the Quest Manager also fires an event with the step, the associated
         /// quest and the questline (QuestEventInfo), but this event allows for
-        /// some additionnal easy direct customization before the event fired
+        /// some additionnal easy direct customization after the event fired
         /// by the Quest Manager Singleton Instance
         /// </summary>
         public UnityEvent<QuestStepSO> OnStepValidated;
 
         /// <summary>
         /// Attemps to Start the quest step if not already started.
-        /// If not started, this method will fire the OnStepStarted event first
-        /// then the QuestManager singleton instance will fire the start step
-        /// event with the full QuestEventInfo
+        /// If not started, this method will run the quest validation
+        /// event pipeline, making the QuestManager event fire before
+        /// the questpoint OnStepStarted event
         /// </summary>
         public void StartStep()
         {
@@ -61,8 +61,10 @@ namespace Slax.QuestSystem
                 OnStepAlreadyStarted.Invoke(_questStep);
                 return;
             }
-            OnStepStarted.Invoke(_questStep);
-            _questStep.StartStep();
+            if (_questStep.StartStep())
+            {
+                OnStepStarted.Invoke(_questStep);
+            }
         }
 
         /// <summary>
@@ -71,21 +73,21 @@ namespace Slax.QuestSystem
         /// it launch the Quest Manager step validation pipeline resulting in the Quest Manager 
         /// firing the full QuestEventInfo
         /// </summary>
-        public void DoQuestStep()
+        public void CompleteStep(bool skipStartCheck = false)
         {
-            if (!Started)
+            if (!skipStartCheck && !Started)
             {
                 StartStep();
                 return;
             }
-            
+
             if (Completed)
             {
                 OnStepAlreadyValidated.Invoke(_questStep);
                 return;
             }
             else OnStepValidated.Invoke(_questStep);
-            _questStep.StepUpdate(StepState.Completed);
+            _questStep.CompleteStep();
         }
     }
 }

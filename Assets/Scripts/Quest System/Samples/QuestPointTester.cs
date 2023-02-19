@@ -26,7 +26,7 @@ public class QuestPointTester : MonoBehaviour
 
     private void Start()
     {
-        _questPoint.DoQuestStep();
+        _questPoint.CompleteStep();
     }
 
     public void OnQuestAlreadyCompleted(QuestStepSO step)
